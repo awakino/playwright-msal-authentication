@@ -1,12 +1,12 @@
 import axios from "axios";
 
-export const getTokens = async (authSettings, scopes: string[]) => {
-    // make the ROPC request to AAD
+// make the ROPC request to AAD
+export const getTokens = async (authSettings, scopes?: string[]) => {
     const payload = {
         grant_type: "password",
         client_id: authSettings.clientId,
         client_secret: authSettings.clientSecret,
-        scope: scopes.join(" "),
+        scope: scopes ? scopes.join(" ") : authSettings.scopes.join(" "),
         username: authSettings.username,
         password: authSettings.password
     }

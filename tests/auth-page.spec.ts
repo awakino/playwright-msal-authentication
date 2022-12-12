@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import {decode, JwtPayload} from "jsonwebtoken";
 
 const url = process.env.TEST_ENVIRONMENT_URL || "http://localhost:5174";
 
@@ -42,7 +43,13 @@ test.describe("Authenticated Tests", () => {
         const token = page.getByTestId("access-token");
         await expect(token).toBeVisible();
 
-        // display the acquired token
-        console.log(await token.innerText());
+        // we can decode the token if we want
+        const parsed = decode(await token.innerText()) as JwtPayload;
+         
+        // expect it to have the MS Graph API as the audience
+        expect(parsed.aud).toBe("00000003-0000-0000-c000-000000000000");
+
+        // optionally display the acquired token
+        // console.log(await token.innerText());
     });
 });
