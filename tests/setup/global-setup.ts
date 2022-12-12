@@ -1,5 +1,5 @@
 import { chromium, FullConfig } from '@playwright/test';
-import authSettings from "./auth-constants";
+import authSettings from "./auth-config";
 
 // Something to do with the way Playwright loads ES modules means that we have to have the .ts
 // on the end of these imports, and that makes Typescript sad

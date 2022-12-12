@@ -1,6 +1,6 @@
 import { DefaultAzureCredential } from "@azure/identity";
 import { SecretClient } from "@azure/keyvault-secrets";
-import TestAuthConfig from "./auth-constants";
+import TestAuthConfig from "./auth-config";
 
 const credential = new DefaultAzureCredential();
 
