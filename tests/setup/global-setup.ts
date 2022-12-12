@@ -1,4 +1,4 @@
-import { chromium, FullConfig } from '@playwright/test';
+import { chromium } from '@playwright/test';
 import authSettings from "./auth-config";
 
 // Something to do with the way Playwright loads ES modules means that we have to have the .ts

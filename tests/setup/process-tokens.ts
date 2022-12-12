@@ -1,5 +1,5 @@
-import { decode } from "jsonwebtoken";
-import authSettings from "./auth-constants";
+import { decode, JwtPayload } from "jsonwebtoken";
+import authSettings from "./auth-config";
 
 export const environment = "login.windows.net";
 
@@ -82,7 +82,7 @@ const buildRefreshTokenEntity = (
 }
 
 export const injectTokens = (tokenResponse) => {
-  const idToken = decode(tokenResponse.id_token);
+  const idToken = decode(tokenResponse.id_token) as JwtPayload;
   const localAccountId = idToken.oid || idToken.sid;
   const realm = idToken.tid;
   const homeAccountId = `${localAccountId}.${realm}`;
