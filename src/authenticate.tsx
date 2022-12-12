@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useMsal, useIsAuthenticated } from "@azure/msal-react";
+import { useMsal, useIsAuthenticated, AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
 import AuthConfig from "../config/auth-config";
 import { CacheLookupPolicy, InteractionRequiredAuthError } from "@azure/msal-browser";
 
@@ -41,23 +41,25 @@ export const AuthenticationPage: React.FC = () => {
 
     return (
             <div>
-                {authenticated ?
-                    <button onClick={() => instance.logout({
-                        authority: AuthConfig.authority
-                    })}>Sign Out</button>
-                :
+                <UnauthenticatedTemplate>
                     <button onClick={login}>Sign In</button>
-                }
-                <br />
-                <h3>Signed In Account</h3>
-                <p>{accounts[0]?.username}</p>
-                <br />
-                <h3>Access Token</h3>
-                {token ?
-                    <p>{token}</p>
-                : 
-                    <button onClick={getToken}>Acquire Token</button>
-                }
+                    <p data-testid="no-auth-text">No user has been signed in yet</p>
+                </UnauthenticatedTemplate>
+                <AuthenticatedTemplate>
+                    <button onClick={() => instance.logout({
+                            authority: AuthConfig.authority
+                        })}>Sign Out</button>
+                        <br />
+                    <h3>Signed In Account</h3>
+                    <p>{accounts[0]?.username}</p>
+                    <br />
+                    <h3>Access Token</h3>
+                    {token ?
+                        <p>{token}</p>
+                    : 
+                        <button onClick={getToken}>Acquire Token</button>
+                    }
+                </AuthenticatedTemplate>
             </div>
     )
 }
