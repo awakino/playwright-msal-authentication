@@ -54,11 +54,42 @@ Once the configuration is updated
 
 - Install the dependencies -  
 `yarn`
-- Run the tests
+- Run the tests  
 `yarn test` 
 
 ## CI/CD
-- GitHub Actions
+- GitHub Actions  
+This sample also works in a GitHub Actions workflow by using the *Azure/get-keyvault-secrets* action to obtain the secrets and then setting the values as environment variables on the test runner step. An example set of steps would be:
+```
+steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: Azure/get-keyvault-secrets@v1
+        with: 
+          keyvault: "<key vault name>"
+          secrets: 'registeredappsecret, testuserpassword'
+        id: testsecrets
+      - name: Install dependencies
+        run: yarn
+      - name: Install Playwright Browsers
+        run: yarn playwright install --with-deps
+      - name: Run Playwright tests
+        run: yarn playwright test
+        env:
+          E2E_TEST_CLIENT_SECRET: ${{ steps.testsecrets.outputs.registeredappsecret }}
+          E2E_TEST_PASSWORD: ${{ steps.testsecrets.outputs.testuserpassword }}
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+```
 
 - Azure DevOps
 
