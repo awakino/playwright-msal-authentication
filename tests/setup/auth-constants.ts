@@ -3,7 +3,7 @@ export default {
 	clientId: "6a2c14d2-4843-4ff1-b4a7-eeb2d43d4670",
 	apiScopes: [],
 	username: "e2e-test@awakinojade.onmicrosoft.com",
-	keyVault: "AWAKINO-KEY-VAULT",
+	keyVault: "<key vault name>",
 	password: "<name of secret in key vault>",
 	clientSecret: "<name of secret in key vault>"
 }

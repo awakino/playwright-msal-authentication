@@ -27,5 +27,22 @@ test.describe("Authenticated Tests", () => {
         // use this context to navigate to the page
         const page = await context.newPage();
         page.goto(url);
+
+        // sign in button shouldn't exist
+        await expect(page.getByRole("button", {name: "Sign In"})).toHaveCount(0);
+
+        // get token button should exist
+        const acquire = page.getByRole("button", {name: "Acquire Token"});
+        await expect(acquire).toBeEnabled();
+
+        // click the button
+        acquire.click();
+
+        // there should now be an access token element
+        const token = page.getByTestId("access-token");
+        await expect(token).toBeVisible();
+
+        // display the acquired token
+        console.log(await token.innerText());
     });
 });

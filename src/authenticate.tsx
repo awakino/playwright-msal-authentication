@@ -55,7 +55,7 @@ export const AuthenticationPage: React.FC = () => {
                     <br />
                     <h3>Access Token</h3>
                     {token ?
-                        <p>{token}</p>
+                        <p data-testid="access-token">{token}</p>
                     : 
                         <button onClick={getToken}>Acquire Token</button>
                     }
