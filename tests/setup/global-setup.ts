@@ -87,7 +87,7 @@ async function globalSetup() {
     }
   }
 
-  // Save signed-in state to 'storageState.json'.
+  // Save signed-in state to json file that can be reused by tests
   await page.context().storageState({ path: 'auth-storage-state.json' });
   await browser.close();
 }

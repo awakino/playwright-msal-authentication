@@ -20,7 +20,9 @@ test.describe("Unauthenticated Tests", () => {
 test.describe("Authenticated Tests", () => {
     test("verify authenticated behviour", async ({browser}) => {
         // we need a new context so we can initialise it with the stored
-        // auth config
+        // auth config - alternatively this could be configured in playwright.config.ts to happen
+        // for every test and any tests that require an unauthenticated context would need to do something
+        // like this
         const context = await browser.newContext({
             storageState: "auth-storage-state.json"
         });
