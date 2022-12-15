@@ -4,3 +4,4 @@ node_modules
 /playwright/.cache/
 
 auth-storage-state.json
+yarn-error.log
