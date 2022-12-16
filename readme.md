@@ -1,7 +1,9 @@
 # Playwright Authentication with AAD and MSAL.js
 
 ## Background
-Out of the box, Playwright struggles to work with single page applications that authenticate to Azure Active Directory using the MSAL.JS library. Best practice recommends against interacting with the AAD login flow UI directly as this is not under your control and can lead to increased test fragility. This sample application demonstrates an alternative approach.
+Out of the box, Playwright struggles to work with single page applications that authenticate to Azure Active Directory using the MSAL.JS library. Best practice recommends against interacting with the AAD login flow UI directly as this is not under your control and can lead to increased test fragility. This sample application demonstrates an alternative approach.  
+Rather than interacting with the login UI itself, this approach uses a global setup script that makes an ROPC request directly to the AAD OAuth token endpoint with the credentials of a test user. It then constructs the same JSON objects that MSAL uses and stores them in the browser context's local storage (just as MSAL does). Finally it saves that local storage state to a file. When each test runs, Playwright creates the test context using that snapshot of the local storage which in turn means that MSAL believes the user to be already authenticated with cached tokens available in local storage. Subsequent requests for API access tokens will use the cached token, or request a new one using the cached credentials.  
+The storage state file could be committed to source control, but would need to be regenerated periodically as the tokens expire. It is easier to generate the tokens at the beginning of each test run so that the tokens being used in that run are always fresh.
 
 ## Setup
 ### AAD Configuration
