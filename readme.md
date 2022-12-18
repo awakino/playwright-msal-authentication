@@ -56,7 +56,9 @@ Once the configuration is updated
 
 - Install the dependencies -  
 `yarn`
-- Run the tests  
+- Start the app -  
+`yarn run dev`  
+- In another command prompt, run the tests -  
 `yarn test` 
 
 ## CI/CD
