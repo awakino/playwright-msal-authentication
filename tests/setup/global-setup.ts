@@ -1,19 +1,20 @@
-import { chromium } from '@playwright/test';
+import { chromium } from "@playwright/test";
 import authSettings from "./auth-config";
 
 // Something to do with the way Playwright loads ES modules means that we have to have the .ts
 // on the end of these imports, and that makes Typescript sad
 //@ts-ignore
-import { getTokens } from './request-tokens.ts';
+import { getTokens } from "./request-tokens.ts";
 //@ts-ignore
-import { injectTokens, buildAccessTokenEntity, environment } from './process-tokens.ts';
+import {
+  injectTokens,
+  buildAccessTokenEntity,
+  environment,
+} from "./process-tokens.ts";
 //@ts-ignore
-import { getClientSecret, getPassword } from './get-secrets.ts';
+import { getClientSecret, getPassword } from "./get-secrets.ts";
 
-const {
-  clientId,
-  apiScopes,
-} = authSettings;
+const { clientId, apiScopes } = authSettings;
 
 async function globalSetup() {
   const browser = await chromium.launch();
@@ -21,12 +22,19 @@ async function globalSetup() {
 
   // get the values of the client secret and account password, either from a key vault or
   // from environment variables (which makes this easier to use in a CD pipeline)
-  authSettings.clientSecret = process.env.E2E_TEST_CLIENT_SECRET || await getClientSecret();
-  authSettings.password = process.env.E2E_TEST_PASSWORD || await getPassword();
-  
-  // make a request to AAD to get a token, and then transform it into the 
+  authSettings.clientSecret =
+    process.env.E2E_TEST_CLIENT_SECRET || (await getClientSecret());
+  authSettings.password =
+    process.env.E2E_TEST_PASSWORD || (await getPassword());
+
+  // make a request to AAD to get a token, and then transform it into the
   // expected local storage values
-  let response = await getTokens(authSettings, ["profile", "openid", "offline_access", "User.Read"]);
+  let response = await getTokens(authSettings, [
+    "profile",
+    "openid",
+    "offline_access",
+    "User.Read",
+  ]);
 
   // process the response into a set of token entities as expected by MSAL
   const tokens = injectTokens(response);
@@ -36,15 +44,15 @@ async function globalSetup() {
     cookies: [],
     origins: [
       {
-        origin: process.env.TEST_ENVIRONMENT_URL || "http://localhost:5174",
+        origin: process.env.TEST_ENVIRONMENT_URL || "http://localhost:5173",
         localStorage: [
-          {name: tokens.accountKey, value: tokens.accountEntity},
-          {name: tokens.refreshTokenKey, value: tokens.refreshTokenEntity},
-          {name: tokens.idTokenKey, value: tokens.idTokenEntity},
-          {name: tokens.accessTokenKey, value: tokens.accessTokenEntity}
-        ]
-      }
-    ]
+          { name: tokens.accountKey, value: tokens.accountEntity },
+          { name: tokens.refreshTokenKey, value: tokens.refreshTokenEntity },
+          { name: tokens.idTokenKey, value: tokens.idTokenEntity },
+          { name: tokens.accessTokenKey, value: tokens.accessTokenEntity },
+        ],
+      },
+    ],
   };
 
   // if there are any additional scopes e.g. for a backend API, a second request for an access token
@@ -56,7 +64,8 @@ async function globalSetup() {
 
     // find the tenant and account from the already acquired id token
     const realm = session.origins[0].localStorage[0].value.realm;
-    const homeAccountId = session.origins[0].localStorage[0].value.homeAccountId;
+    const homeAccountId =
+      session.origins[0].localStorage[0].value.homeAccountId;
 
     // generate the MSAL objects
     const apiAccessTokenKey = `${homeAccountId}-${environment}-accesstoken-${clientId}-${realm}-${apiScopes}`;
@@ -65,12 +74,15 @@ async function globalSetup() {
       response.access_token,
       response.expires_in,
       response.ext_expires_in,
-      realm, 
-      apiScopes.join(" ")
+      realm,
+      apiScopes.join(" "),
     );
 
     // add to the session object
-    session.origins[0].localStorage.push({name: apiAccessTokenKey, value: apiAccessTokenEntity});
+    session.origins[0].localStorage.push({
+      name: apiAccessTokenKey,
+      value: apiAccessTokenEntity,
+    });
   }
 
   // update the page context with that session (although technically it goes into local storage
@@ -81,14 +93,17 @@ async function globalSetup() {
 
     // 1.2 Loop through the items in localStorage and assign them
     for (const { name, value } of localStorage) {
-      await page.evaluate(([name, value]) => {
-        window.localStorage.setItem(name, JSON.stringify(value));
-      }, [name, value]);
+      await page.evaluate(
+        ([name, value]) => {
+          window.localStorage.setItem(name, JSON.stringify(value));
+        },
+        [name, value],
+      );
     }
   }
 
   // Save signed-in state to json file that can be reused by tests
-  await page.context().storageState({ path: 'auth-storage-state.json' });
+  await page.context().storageState({ path: "auth-storage-state.json" });
   await browser.close();
 }
 
