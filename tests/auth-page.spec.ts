@@ -50,8 +50,5 @@ test.describe("Authenticated Tests", () => {
 
     // expect it to have the MS Graph API as the audience
     expect(parsed.aud).toBe("00000003-0000-0000-c000-000000000000");
-
-    // optionally display the acquired token
-    // console.log(await token.innerText());
   });
 });
